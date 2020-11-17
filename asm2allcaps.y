@@ -3,6 +3,8 @@
 #include <stdlib.h>
 extern int yylex();
 extern int yyparse();
+extern FILE *yyout;
+void yyerror(const char *s);
 %}
 
 %token	NUM
@@ -14,12 +16,22 @@ extern int yyparse();
 %token	SECTION
 %token	STR
 %token	STRLEN
-
+%type <name> SMALL
+%type <name> CAPS
+%type <name> NUM
+%type <name> EXTERN
+%type <name> SECTION
+%type <name> STR
+%type <name> STRLEN
+%type <name> COMMA
+%union{
+	  char name[100];
+}
 %%
 prog : 
      stmts;
 stmts:
-      |stmt stmts;
+      |stmt NEWLINE stmts;
 stmt:
 	 EXTERN
 	{
@@ -56,18 +68,10 @@ stmt:
         {fprintf(yyout, "%s %s", $1,$2);} 
 %%
 
-int main(int, char**) {
-extern FILE *yyin, *yyout
-
-
+int main() {
 // open a file handle to a particular file:
   FILE *yyin = fopen("input.asm", "r");
   FILE *yyout = fopen("output.asm", "w");
-  // make sure it is valid:
-  if (!yyin) {
-    cout << "I can't open the file!" << endl;
-    return -1;
-  }
   // Parse through the input:
   yyparse();
 }

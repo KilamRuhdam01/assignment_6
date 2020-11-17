@@ -3,7 +3,8 @@
 #include <stdlib.h>
 #include <ctype.h>
 //void showError();
-#include "y.tab.h"
+#include "asm2allcaps.tab.h"
+int yywrap();
 %}
 
 numbers		[A-Fa-f0-9]+
@@ -20,20 +21,19 @@ caps		([A-Z][A-Z][A-Z])
 small			{int j =0;
 			char ch;
 			while(yytext[j]){ 
-        		ch = str[j]; 
+        		ch = yytext[j]; 
         		putchar(toupper(ch)); 
         		j++; 
     			} return SMALL;}
 caps			return CAPS;
 [ \t\n]+ 		;
-\n			return NEWLINE;
+'\n'			return NEWLINE;
 ','			return COMMA;
 ';'.*			;
 .			;
 
 %%
 
-
-
-
-		
+int yywrap() {
+   return 1;
+}
